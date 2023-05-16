@@ -8,6 +8,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'knu_sw!!'
 app.config['MYSQL_DB'] = 'db_sample'
+
 mysql = MySQL(app)
  
 @app.route('/')
@@ -35,21 +36,27 @@ def index():
 def result():
     name = request.form['name']
     cur = mysql.connection.cursor()
-    cur.execute(f"SELECT * FROM teaches natural join instructor where name='{name}'")
+    cur.execute(f"SELECT * FROM teaches natural join instructor,department where instructor.dept_name=department.dept_name and name='{name}'")
 
     result = cur.fetchall()
     cur.close()
 
-    
+    table_html=f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][6]} </p><p>학과건물: {result[0][9]}</p>'
+
+    cur2 = mysql.connection.cursor()
+    cur2.execute(f"SELECT title,year,semester,teaches.course_id,sec_id FROM (instructor natural join teaches),course where teaches.course_id = course.course_id and name='{name}'")
+
+    result2 = cur2.fetchall()
+    cur2.close()
 
 
-    # HTML 테이블 생성노노 
-    table_html = '<table><tr><th>ID</th><th>과목코드</th><th>sec_id</th><th>semester</th><th>year</th><th>name</th><th>dept_name</th><th>salary</th></tr>'
-    for row in result:
-        table_html += f'<tr><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[4]}</td><td>{row[5]}</td><td>{row[6]}</td><td>{row[7]}</td></tr>'
+    #HTML 테이블  
+    table_html += '<h1>모든 강의 내역</h1><table><tr><th>과목이름(title)</th><th>년도(year)</th><th>학기(semester)</th><th>과목ID(course_id)</th><th>분반번호(sec_id)</th></tr>'
+    for row in result2:
+        table_html += f'<tr><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td><td>{row[4]}</td></tr>'
     table_html += '</table>'
 
-    # CSS 스타일 추가
+    #CSS 스타일 추가
     table_html += '''
     <style>
     table {
@@ -87,4 +94,5 @@ def result():
 #     return str(result)
  
  
-app.run(debug=True)
+# app.run(debug=True)
+app.run(host='0.0.0.0', port=9900)
