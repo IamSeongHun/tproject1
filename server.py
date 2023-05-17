@@ -121,5 +121,6 @@ def result():
 
 
 #app.run(debug=True)
-#app.run(host='0.0.0.0', port=9900)
+app.run(host='0.0.0.0', port=9900)
 #app.run(host='0.0.0.0')
+#http://59.23.16.137:9900 이 주소로 가야 외부에서 접속 가능.
