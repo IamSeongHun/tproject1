@@ -2,7 +2,7 @@ from flask import Flask, request
 import random
 from flask_mysqldb import MySQL
 
- 
+
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -10,77 +10,82 @@ app.config['MYSQL_PASSWORD'] = 'knu_sw!!'
 app.config['MYSQL_DB'] = 'db_sample'
 
 mysql = MySQL(app)
- 
+
+
 @app.route('/')
 def index():
-    return f'''<!doctype html>
-    <html>
-        <body>
+    return f'''
         <div style="display: flex; justify-content: center;">
-        <form action="/search" method="post">
-        <select id="name" name="name">
-        <option value="">--찾을 이름을 선택하시오--</option>
-    <option value="Atanassov">Atanassov</option>
-    <option value="Bawa">Bawa</option>
-    <option value="Bietzk">Bietzk</option>
-    <option value="Bondi">Bondi</option>
-    <option value="Bourrier">Bourrier</option>
-    <option value="Choll">Choll</option>
-    <option value="DAgostino">DAgostino</option>
-    <option value="Dale">Dale</option>
-    <option value="Gustafsson">Gustafsson</option>
-    <option value="Jaekel">Jaekel</option>
-    <option value="Kean">Kean</option>
-    <option value="Lembr">Lembr</option>
-    <option value="Lent">Lent</option>
-    <option value="Liley">Liley</option>
-    <option value="Luo">Luo</option>
-    <option value="Mahmoud">Mahmoud</option>
-    <option value="Mingoz">Mingoz</option>
-    <option value="Morris">Morris</option>
-    <option value="Pimenta">Pimenta</option>
-    <option value="Queiroz">Queiroz</option>
-    <option value="Romero">Romero</option>
-    <option value="Sakurai">Sakurai</option>
-    <option value="Sarkar">Sarkar</option>
-    <option value="Shuming">Shuming</option>
-    <option value="Sullivan">Sullivan</option>
-    <option value="Tung">Tung</option>
-    <option value="Ullman">Ullman</option>
-    <option value="Valtchev">Valtchev</option>
-    <option value="Vicentino">Vicentino</option>
-    <option value="Voronina">Voronina</option>
-    <option value="Wieland">Wieland</option>
-  </select>
-  
-  <input type="submit" value="검색">
-        </form>
+            <form action="/search" method="post">
+                <select id="name" name="name">
+                    <option value="">--찾을 이름을 선택하시오--</option>
+                    <option value="Atanassov">Atanassov</option>
+                    <option value="Bawa">Bawa</option>
+                    <option value="Bietzk">Bietzk</option>
+                    <option value="Bondi">Bondi</option>
+                    <option value="Bourrier">Bourrier</option>
+                    <option value="Choll">Choll</option>
+                    <option value="DAgostino">DAgostino</option>
+                    <option value="Dale">Dale</option>
+                    <option value="Gustafsson">Gustafsson</option>
+                    <option value="Jaekel">Jaekel</option>
+                    <option value="Kean">Kean</option>
+                    <option value="Lembr">Lembr</option>
+                    <option value="Lent">Lent</option>
+                    <option value="Liley">Liley</option>
+                    <option value="Luo">Luo</option>
+                    <option value="Mahmoud">Mahmoud</option>
+                    <option value="Mingoz">Mingoz</option>
+                    <option value="Morris">Morris</option>
+                    <option value="Pimenta">Pimenta</option>
+                    <option value="Queiroz">Queiroz</option>
+                    <option value="Romero">Romero</option>
+                    <option value="Sakurai">Sakurai</option>
+                    <option value="Sarkar">Sarkar</option>
+                    <option value="Shuming">Shuming</option>
+                    <option value="Sullivan">Sullivan</option>
+                    <option value="Tung">Tung</option>
+                    <option value="Ullman">Ullman</option>
+                    <option value="Valtchev">Valtchev</option>
+                    <option value="Vicentino">Vicentino</option>
+                    <option value="Voronina">Voronina</option>
+                    <option value="Wieland">Wieland</option>
+                </select>
+
+                <input type="submit" value="검색">
+
+            </form>
         </div>
-        </body>
-    </html>'''
- 
+    '''
+
+
 @app.route('/search', methods=['POST'])
 def result():
+#강사정보
     name = request.form['name']
     cur = mysql.connection.cursor()
-    cur.execute(f"SELECT * FROM teaches natural join instructor,department where instructor.dept_name=department.dept_name and name='{name}'")
+    cur.execute(
+        f"SELECT * FROM teaches natural join instructor,department where instructor.dept_name=department.dept_name and name='{name}'")
 
     result = cur.fetchall()
     cur.close()
 
-    table_html=f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][6]} </p><p>학과건물: {result[0][9]}</p>'
-############
+    table_html = f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][6]} </p><p>학과건물: {result[0][9]}</p>'
+
+#해당 강사의 모든 강의 내역
     cur = mysql.connection.cursor()
-    cur.execute(f"SELECT title,year,semester,teaches.course_id,sec_id FROM (instructor natural join teaches),course where teaches.course_id = course.course_id and name='{name}'")
+    cur.execute(
+        f"SELECT title,year,semester,teaches.course_id,sec_id FROM (instructor natural join teaches),course where teaches.course_id = course.course_id and name='{name}'")
 
     result = cur.fetchall()
     cur.close()
 
     for row in result:
-        table_html+=f'<h1>모든 강의 내역</h1><p>과목이름: {row[0]}</p><p>년도: {row[1]} </p><p>학기: {row[2]} </p><p>과목ID: {row[3]}</p><p>분반번호: {row[4]}</p>'
+        table_html += f'<h1>모든 강의 내역</h1><p>과목이름: {row[0]}</p><p>년도: {row[1]} </p><p>학기: {row[2]} </p><p>과목ID: {row[3]}</p><p>분반번호: {row[4]}</p>'
 
         cur = mysql.connection.cursor()
-        cur.execute(f"select row_number() over(order by student.id),dept_name,student.id,name from takes join student on takes.id=student.id where year={row[1]} and semester='{row[2]}' and course_id ={row[3]} and sec_id={row[4]}")
+        cur.execute(
+            f"select row_number() over(order by student.id),dept_name,student.id,name from takes join student on takes.id=student.id where year={row[1]} and semester='{row[2]}' and course_id ={row[3]} and sec_id={row[4]}")
 
         result2 = cur.fetchall()
         cur.close()
@@ -90,22 +95,7 @@ def result():
             table_html += f'<tr><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>'
         table_html += '</table>'
 
-
-    #3번째꺼
-    # cur = mysql.connection.cursor()
-    # cur.execute(f"SELECT title,year,semester,teaches.course_id,sec_id FROM (instructor natural join teaches),course where teaches.course_id = course.course_id and name='{name}'")
-
-    # result = cur.fetchall()
-    # cur.close()
-
-
-    # #HTML 테이블  
-    # table_html += '<br><br><h1>모든 강의 내역</h1><table><tr><th>과목이름(title)</th><th>년도(year)</th><th>학기(semester)</th><th>과목ID(course_id)</th><th>분반번호(sec_id)</th></tr>'
-    # for row in result:
-    #     table_html += f'<tr><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td><td>{row[4]}</td></tr>'
-    # table_html += '</table>'
-
-    #CSS 스타일 추가
+    # table CSS
     table_html += '''
     <style>
     table {
@@ -128,20 +118,7 @@ def result():
 
     return table_html
 
-    
 
 
-
-
-
-# def search(name):
-#     cur = mysql.connection.cursor()
-#     cur.execute(f"SELECT * FROM teaches natural join instructor where name='{name}'")
-
-#     result = cur.fetchall()
-#     cur.close()
-#     return str(result)
- 
- 
-app.run(debug=True)
-#app.run(host='0.0.0.0', port=9900)
+#app.run(debug=True)
+app.run(host='0.0.0.0', port=9900)
