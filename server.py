@@ -1,5 +1,4 @@
 from flask import Flask, request
-import random
 from flask_mysqldb import MySQL
 
 
@@ -14,7 +13,7 @@ mysql = MySQL(app)
 
 @app.route('/')
 def index():
-    return f'''
+    return '''
         <div style="display: flex; justify-content: center;">
             <form action="/search" method="post">
                 <select id="name" name="name">
@@ -51,9 +50,7 @@ def index():
                     <option value="Voronina">Voronina</option>
                     <option value="Wieland">Wieland</option>
                 </select>
-
                 <input type="submit" value="검색">
-
             </form>
         </div>
     '''
