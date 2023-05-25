@@ -119,7 +119,7 @@ def result():
         result = cur.fetchall()
         cur.close()
         if(len(result)==0):
-            return f'<h1>{name}이라는 이름은 데이터베이스에 존재 하지 않습니다.</h1>'
+            return f'<h1>[ {name} ](이)라는 이름은 데이터베이스에 존재 하지 않습니다.</h1>'
         return f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][1]} </p><p>학과건물: {result[0][2]}</p><h1>{name}은 수업 내역이 없습니다.</h1>'
 
     table_html = f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][6]} </p><p>학과건물: {result[0][9]}</p>'
