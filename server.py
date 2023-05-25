@@ -17,8 +17,8 @@ def index():
                   <h1 style="  text-align: center;">강사정보 및 강의내역 검색</h1>
         <div style="display: flex; justify-content: center;">
             <form action="/search" method="post">
-                <select id="name" name="name">
-                    <option value="">--찾을 이름을 선택하시오--</option>
+                <select style="width: 200px;" id="name" name="name">
+                    <option value="">이름을 선택하세요</option>
                     <option value="Arias">Arias</option>
                     <option value="Arinb">Arinb</option>
                     <option value="Atanassov">Atanassov</option>
@@ -74,8 +74,31 @@ def index():
 
                 </select>
                 <input type="submit" value="검색">
+
+
+                
             </form>
+
+            
         </div>
+        <div style="display: flex; justify-content: center;">
+        <form action="/search" method="post">
+                <input type="text" style="width: 200px; box-sizing: border-box;" id="name" name="name" placeholder="이름을 입력하세요">
+                <input type="submit" value="검색">
+            </form>
+
+        
+        </div>
+        <style>
+  .custom-select {
+    width: 200px;
+  }
+
+  .custom-input {
+    width: 200px;
+    box-sizing: border-box;
+  }
+</style>
     '''
 
 
@@ -95,6 +118,8 @@ def result():
         cur.execute(f"select id,instructor.dept_name,building from instructor, department where instructor.dept_name=department.dept_name and name='{name}'")
         result = cur.fetchall()
         cur.close()
+        if(len(result)==0):
+            return f'<h1>{name}이라는 이름은 데이터베이스에 존재 하지 않습니다.</h1>'
         return f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][1]} </p><p>학과건물: {result[0][2]}</p><h1>{name}은 수업 내역이 없습니다.</h1>'
 
     table_html = f'<h1>강사정보</h1><p>이름: {name}</p><p>ID: {result[0][0]} </p><p>학과이름: {result[0][6]} </p><p>학과건물: {result[0][9]}</p>'
